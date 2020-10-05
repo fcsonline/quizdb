@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'json'
 require 'neo4j'
 
 neo4j_url = ENV['NEO4J_URL'] || 'http://localhost:7474'
@@ -26,8 +27,13 @@ class Person
   has_many :out, :movies, type: :PRODUCED
 end
 
+
+before do
+  content_type :json
+end
+
 get '/movies' do
   movies = Movie.all # .with_associations(:author, :categories)
 
-  json: movies
+  movies.to_json
 end
