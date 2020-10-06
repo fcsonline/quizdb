@@ -1,13 +1,17 @@
 require 'sinatra'
 require 'json'
 require 'neo4j'
+require 'neo4j-core'
 require 'byebug'
 
 neo4j_url = ENV['NEO4J_URL'] || 'http://localhost:7474'
 neo4j_username = ENV['NEO4J_USERNAME'] || 'neo4j'
 neo4j_password = ENV['NEO4J_PASSWORD'] || 'test'
 
-Neo4j::Session.open(:server_db, neo4j_url, basic_auth: {username: neo4j_username, password: neo4j_password})
+Neo4j::Session.open(
+  :server_db, neo4j_url,
+  basic_auth: {username: neo4j_username, password: neo4j_password}
+)
 
 class Movie
   include Neo4j::ActiveNode
