@@ -1,20 +1,21 @@
 require 'sinatra'
 require 'json'
-require 'neo4j'
-require 'neo4j-core'
+# require 'active_graph'
+# require 'neo4j-ruby-driver'
 require 'byebug'
 
-neo4j_url = ENV['NEO4J_URL'] || 'http://localhost:7474'
-neo4j_username = ENV['NEO4J_USERNAME'] || 'neo4j'
-neo4j_password = ENV['NEO4J_PASSWORD'] || 'test'
+byebug
 
-Neo4j::Session.open(
-  :server_db, neo4j_url,
-  basic_auth: {username: neo4j_username, password: neo4j_password}
+ActiveGraph::Base.driver = Neo4j::Driver::GraphDatabase.driver(
+  'neo4j::/localhost:7687',
+  Neo4j::Driver.AuthTokens.basic('neo4j','test'),
+  encryption: false
 )
 
+me = ActiveGraph::Base.query('MATCH (found:User) WHERE found.name = {aName} RETURN found', aName: 'Andreas').first.found
+
 class Movie
-  include Neo4j::ActiveNode
+  include ActiveGraph::Node
 
   property :title, type: String
   property :released, type: Integer
@@ -22,7 +23,7 @@ class Movie
 end
 
 class Person
-  include Neo4j::ActiveNode
+  include ActiveGraph::Node
 
   property :name, type: String
   property :born, type: Integer

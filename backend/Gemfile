@@ -4,5 +4,6 @@ gem 'thin'
 gem 'rake'
 gem 'sinatra'
 gem 'byebug'
-gem 'neo4j', '~> 9.6', '>= 9.6.2'
-gem 'neo4j-core', '~> 9.0'
+
+gem 'activegraph', '>= 10.0.0'
+gem 'neo4j-ruby-driver'
