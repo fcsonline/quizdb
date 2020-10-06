@@ -1,39 +1,65 @@
 require 'sinatra'
-require 'json'
-require 'neo4j'
+require 'neo4j/core'
+require 'neo4j/session_manager'
 
 neo4j_url = ENV['NEO4J_URL'] || 'http://localhost:7474'
 neo4j_username = ENV['NEO4J_USERNAME'] || 'neo4j'
 neo4j_password = ENV['NEO4J_PASSWORD'] || 'test'
 
-Neo4j::Session.open(:server_db, neo4j_url, basic_auth: {username: neo4j_username, password: neo4j_password})
 
-class Movie
-  include Neo4j::ActiveNode
+adaptor = Neo4j::Core::CypherSession::Adaptors::HTTP.new('http://neo4j:test@neo4j:7474', wrap_level: :proc)
+session = Neo4j::Core::CypherSession.new(adaptor)
 
-  property :title, type: String
-  property :released, type: Integer
-  property :tagline, type: String
+session.query('CREATE CONSTRAINT ON (m:Movie) ASSERT m.title IS UNIQUE')
+session.query('CREATE CONSTRAINT ON (p:Person) ASSERT p.name IS UNIQUE')
+
+require './models'
+
+set :root, File.dirname(__FILE__)
+set :public_folder, File.dirname(__FILE__) + '/static'
+
+get '/' do
+  send_file File.expand_path('index.html', settings.public_folder)
 end
 
-class Person
-  include Neo4j::ActiveNode
+get '/graph' do
+  actors = Person.all.to_a # or if we want to be sure, query_as(:p).match("p-[:ACTED_IN]->()").pluck('distinct p')
+  movies = Movie.all.to_a
 
-  property :name, type: String
-  property :born, type: Integer
+  nodes = actors + movies
+  links = movies.map.with_index(2).to_a.map do |movie_and_index|
+    movie_and_index[0].actors.map do |a|
+      {source: movie_and_index[1], target: nodes.index(a)}
+    end
+  end.flatten
 
-  has_many :out, :movies, type: :ACTED_IN
-  has_many :out, :movies, type: :DIRECTED
-  has_many :out, :movies, type: :PRODUCED
+  nodes_hash = actors.map{|n| {title: n.name, label: "actor"}} + movies.map{|n| {title: n.title, label: "movie"}}
+
+  {nodes: nodes_hash, links:links}.to_json
 end
 
+get '/search' do
+  movies = Movie.where(title: /.*#{request['q']}.*/i)
 
-before do
-  content_type :json
+  movies.map {|movie| {movie: movie.attributes} }.to_json
 end
 
-get '/movies' do
-  movies = Movie.all # .with_associations(:author, :categories)
+get '/movie/:title' do
+  movie = Movie.where(title: params['title']).first
 
-  movies.to_json
+  cast_data_for_role = Proc.new do |role|
+    Proc.new do |person, rel|
+      {
+        name: person.name,
+        # we could have used the roles accessor (rel.roles) method here when rol is a Engagement class
+        role: rel.props[:roles] || [],
+        job: role
+      }
+    end
+  end
+
+  cast_data = movie.actors.each_with_rel.map(&cast_data_for_role.call(:acted)) +
+              movie.directors.each_with_rel.map(&cast_data_for_role.call(:directed))
+
+  {title: movie.title, cast: cast_data}.to_json
 end

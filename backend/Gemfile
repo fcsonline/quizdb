@@ -1,7 +1,10 @@
 source 'https://rubygems.org'
 
-gem 'thin'
-gem 'rake'
 gem 'sinatra'
-gem 'neo4j', '~> 9.6', '>= 9.6.2'
-gem 'neo4j-core', '~> 9.0'
+gem 'thin'
+gem 'neo4j'
+
+group 'development' do
+  gem 'pry'
+  gem 'shotgun'
+end
