@@ -4,13 +4,16 @@ services:
   web:
     tty: true
     stdin_open: true
-    image: ruby:2.7.1
+    image: node:12.18.3
     ports:
       - 10000:3000
+      - 9229:9229
     volumes:
     - ./backend/:/app
     working_dir: /app
-    entrypoint: bash -c "bundle install && thin -R config.ru -a 0.0.0.0 -p 3000 start"
+    entrypoint: bash -c "npm install && npm run start"
+    links:
+      - "neo4j:database"
 
   neo4j:
     image: neo4j:3.5

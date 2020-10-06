@@ -13,3 +13,6 @@ neo4j/plugins/*
 # Ruby
 backend/.bundle
 vendor
+
+# Nodejs
+node_modules
