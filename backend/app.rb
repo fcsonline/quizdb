@@ -23,9 +23,20 @@ class Person
   property :name, type: String
   property :born, type: Integer
 
-  has_many :out, :movies, type: :ACTED_IN
+  has_many :out, :movies, type: :ACTED_IN, rel_class: ActedIn
   has_many :out, :movies, type: :DIRECTED
   has_many :out, :movies, type: :PRODUCED
+end
+
+class ActedIn
+  include ActiveGraph::Relationship
+
+  from_class :Person
+  to_class   :Movie
+
+  property :roles
+
+  serialize :roles
 end
 
 
