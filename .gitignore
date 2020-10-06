@@ -6,3 +6,10 @@ neo4j/plugins/*
 
 # Swap files
 *.swp
+
+# Byebug
+.byebug_history
+
+# Ruby
+backend/.bundle
+vendor
