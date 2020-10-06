@@ -15,3 +15,10 @@ The idea is that every user can have their own databases, like Anki decks or
 the can reuse some existing public databases.
 
 **Tecnologies:** Neo4j, GraphQL and React
+
+## Documentation
+
+- https://neo4jrb.readthedocs.io/en/stable/
+- https://neo4j.com/developer/ruby-course/
+- https://neo4j.com/developer/example-project/
+- https://github.com/neo4jrb/neo4j-ruby-driver/blob/master/docs/dev_manual_examples.rb
