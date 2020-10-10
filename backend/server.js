@@ -1,16 +1,19 @@
+const redis = require("redis")
 const neo4j = require('neo4j-driver')
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid')
 const _ = require('lodash')
 
 const express = require('express')
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 const uri = 'bolt://database:7687'
 const user = 'neo4j'
 const password = 'test'
 const driver = neo4j.driver(uri, neo4j.auth.basic(user, password))
 const session = driver.session()
+
+const client = redis.createClient(process.env.REDIS_URL)
 
 const games = {}
 
@@ -34,10 +37,10 @@ app.get('/ask', async (req, res) => {
   const challange = _.sample(challanges)
   const { question, answer } = await challange()
 
-  games[id] = {
+  client.hmset(`game-${id}`, {
     question,
     answer
-  }
+  })
 
   console.log('Q:', question)
   console.log('A:', answer)
@@ -46,6 +49,37 @@ app.get('/ask', async (req, res) => {
     id,
     question
   })
+})
+
+function fetchGame(id) {
+  return new Promise((resolve, reject) => {
+    client.hgetall(`game-${id}`, (err, reply) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(reply)
+      }
+    })
+  })
+}
+
+app.get('/answer', async (req, res) => {
+  console.log('Incoming answer', req.query)
+
+  const id = req.query.id
+  const answer = req.query.answer
+
+  const game = await fetchGame(id)
+
+  console.log('Game', game)
+
+  if (!game) {
+    res.status(404)
+  } else if (game.answer !== answer) {
+    res.json('Incorrect!')
+  } else {
+    res.json('Correct!')
+  }
 })
 
 app.listen(port, () => {
