@@ -1,9 +1,0 @@
-source 'https://rubygems.org'
-
-gem 'thin'
-gem 'rake'
-gem 'sinatra'
-gem 'byebug'
-
-gem 'activegraph', '>= 10.0.0'
-gem 'neo4j-ruby-driver'
