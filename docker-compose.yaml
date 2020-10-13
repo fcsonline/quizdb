@@ -1,15 +1,14 @@
 version: '3'
 
 services:
-  app:
+  backend:
     tty: true
     stdin_open: true
     image: node:12.18.3
-    ports:
-      - 10000:3000
-      - 9229:9229 # Debuging nodejs
+    # ports:
+    # - 9229:9229 Debuging nodejs
     volumes:
-    - ./app/:/app
+    - ./backend/:/app
     environment:
       - REDIS_URL=redis://cache
     working_dir: /app
@@ -17,6 +16,35 @@ services:
     links:
       - "neo4j:database"
       - "redis:cache"
+    labels:
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api/`)"
+      - "traefik.http.services.backend.loadbalancer.server.port=3000"
+
+  frontend:
+    tty: true
+    stdin_open: true
+    image: node:12.18.3
+    # ports:
+    # - 9229:9229 Debuging nodejs
+    volumes:
+    - ./frontend/:/app
+    working_dir: /app
+    entrypoint: bash -c "yarn && yarn start"
+    labels:
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+  traefik:
+    image: "traefik:v2.1.2"
+    command:
+      - --entrypoints.web.address=:3000
+      - --providers.docker=true
+      - --api.insecure
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   redis:
     image: redis

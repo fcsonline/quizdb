@@ -3,6 +3,7 @@ const neo4j = require('neo4j-driver')
 const { v4: uuidv4 } = require('uuid')
 const _ = require('lodash')
 
+const path = require('path')
 const express = require('express')
 const app = express()
 const port = process.env.PORT || 3000
@@ -14,8 +15,6 @@ const driver = neo4j.driver(uri, neo4j.auth.basic(user, password))
 const session = driver.session()
 
 const client = redis.createClient(process.env.REDIS_URL)
-
-const games = {}
 
 const challanges = [
   async () => {
@@ -31,7 +30,11 @@ const challanges = [
   }
 ]
 
-app.get('/ask', async (req, res) => {
+app.get('/api/ping', function (req, res) {
+  res.json('Ok!')
+})
+
+app.get('/api/ask', async (req, res) => {
   const id = uuidv4()
 
   const challange = _.sample(challanges)
@@ -63,7 +66,7 @@ function fetchGame(id) {
   })
 }
 
-app.get('/answer', async (req, res) => {
+app.get('/api/answer', async (req, res) => {
   console.log('Incoming answer', req.query)
 
   const id = req.query.id
