@@ -1,15 +1,15 @@
 version: '3'
 
 services:
-  web:
+  app:
     tty: true
     stdin_open: true
     image: node:12.18.3
     ports:
       - 10000:3000
-      - 9229:9229
+      - 9229:9229 # Debuging nodejs
     volumes:
-    - ./backend/:/app
+    - ./app/:/app
     environment:
       - REDIS_URL=redis://cache
     working_dir: /app
