@@ -25,13 +25,13 @@ const challenges = [
     const actor = _.sample(actors.records).get(0)
     const movies = await session.run ('MATCH (Person {name: $actor})-[:ACTED_IN]->(actorMovies) RETURN actorMovies', { actor })
 
-    if (!movies.records.length) throw new Error('No records')
+    if (!movies.records.length) throw new Error(`No movie records for ${actor}`)
 
     const movie = _.sample(movies.records).get(0).properties
 
     let options = await session.run ('MATCH (movie:Movie) RETURN movie.title LIMIT 15')
 
-    if (!options.records.length) throw new Error('No records')
+    if (!options.records.length) throw new Error('No option records')
 
     options = _.sampleSize(options.records.map(record => record.get(0)), 3)
 
