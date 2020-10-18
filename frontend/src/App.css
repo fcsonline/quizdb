@@ -1,6 +1,11 @@
 .App {
   text-align: center;
-  padding: 40px;
+  padding: 80px;
   display: flex;
   justify-content: center;
+}
+
+.Badge {
+  width: 64px;
+  stroke: green;
 }

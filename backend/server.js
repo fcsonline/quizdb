@@ -5,6 +5,7 @@ const _ = require('lodash')
 
 const path = require('path')
 const express = require('express')
+const bodyParser = require('body-parser')
 const app = express()
 const port = process.env.PORT || 3000
 
@@ -16,7 +17,9 @@ const session = driver.session()
 
 const client = redis.createClient(process.env.REDIS_URL)
 
-const challanges = [
+app.use(bodyParser.json())
+
+const challenges = [
   async () => {
     const actors = await session.run ('MATCH (p: Person) RETURN p.name')
     const actor = _.sample(actors.records).get(0)
@@ -26,7 +29,24 @@ const challanges = [
 
     const movie = _.sample(movies.records).get(0).properties
 
-    return { question: `In which movie acted ${actor} in and was released on ${movie.released.low}?`, answer: movie.title }
+    let options = await session.run ('MATCH (movie:Movie) RETURN movie.title LIMIT 15')
+
+    if (!options.records.length) throw new Error('No records')
+
+    options = _.sampleSize(options.records.map(record => record.get(0)), 3)
+
+    if (!options.includes(movie.title)) {
+      options = [
+        ..._.sampleSize(options, 2),
+        movie.title
+      ]
+    }
+
+    return {
+      question: `In which movie acted ${actor} in and was released on ${movie.released.low}?`,
+      options: _.shuffle(options),
+      answer: movie.title
+    }
   }
 ]
 
@@ -37,8 +57,8 @@ app.get('/api/ping', function (req, res) {
 app.get('/api/ask', async (req, res) => {
   const id = uuidv4()
 
-  const challange = _.sample(challanges)
-  const { question, answer } = await challange()
+  const challange = _.sample(challenges)
+  const { question, options, answer } = await challange()
 
   client.hmset(`game-${id}`, {
     question,
@@ -46,11 +66,12 @@ app.get('/api/ask', async (req, res) => {
   })
 
   console.log('Q:', question)
-  console.log('A:', answer)
+  console.log('A:', answer, `(${options.join(', ')})`)
 
   res.json({
     id,
-    question
+    question,
+    options
   })
 })
 
@@ -66,11 +87,11 @@ function fetchGame(id) {
   })
 }
 
-app.get('/api/answer', async (req, res) => {
-  console.log('Incoming answer', req.query)
+app.post('/api/answer', async (req, res) => {
+  console.log('Incoming answer', req.body)
 
-  const id = req.query.id
-  const answer = req.query.answer
+  const id = req.body.id
+  const answer = req.body.answer
 
   const game = await fetchGame(id)
 
@@ -79,9 +100,9 @@ app.get('/api/answer', async (req, res) => {
   if (!game) {
     res.status(404)
   } else if (game.answer !== answer) {
-    res.json('Incorrect!')
+    res.json({ answer: 'incorrect' })
   } else {
-    res.json('Correct!')
+    res.json({ answer: 'correct' })
   }
 })
 

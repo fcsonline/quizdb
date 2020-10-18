@@ -2,17 +2,20 @@ import React from 'react';
 
 import './Card.css';
 
-function Card({ title, onClickOption }) {
-
+function Card({ title, options, onClickOption }) {
   return (
-    <div className="Card">
-      {title}
-      <button onClick={onClickOption}>
-        Option1
-      </button>
-      <button onClick={onClickOption}>
-        Option1
-      </button>
+    <div className='Card'>
+      <div className='Question'>
+        {title}
+      </div>
+
+      <div className='Options'>
+        {options.map((option) => (
+          <button key={option} className='Option' onClick={onClickOption(option)}>
+            { option }
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
