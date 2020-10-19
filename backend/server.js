@@ -69,7 +69,7 @@ const challenges = [
     return {
       question: `In which year was '${movie.title}' released?`,
       options: _.shuffle(options),
-      answer: year
+      answer: String(year)
     }
   }
 ]
@@ -115,7 +115,7 @@ app.post('/api/answer', async (req, res) => {
   console.log('Incoming answer', req.body)
 
   const id = req.body.id
-  const answer = req.body.answer
+  const answer = String(req.body.answer)
 
   const game = await fetchGame(id)
 
