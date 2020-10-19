@@ -21,7 +21,7 @@ app.use(bodyParser.json())
 
 const challenges = [
   async () => {
-    const actors = await session.run ('MATCH (p: Person) RETURN p.name')
+    const actors = await session.run ('MATCH (p: Person)-[:ACTED_IN]->(m) RETURN p.name')
     const actor = _.sample(actors.records).get(0)
     const movies = await session.run ('MATCH (Person {name: $actor})-[:ACTED_IN]->(actorMovies) RETURN actorMovies', { actor })
 
@@ -29,7 +29,7 @@ const challenges = [
 
     const movie = _.sample(movies.records).get(0).properties
 
-    let options = await session.run ('MATCH (movie:Movie) RETURN movie.title LIMIT 15')
+    let options = await session.run ('MATCH (movie:Movie) RETURN movie.title LIMIT 50')
 
     if (!options.records.length) throw new Error('No option records')
 
@@ -49,7 +49,7 @@ const challenges = [
     }
   },
   async () => {
-    const movies = await session.run ('MATCH (movie:Movie) RETURN movie LIMIT 15')
+    const movies = await session.run ('MATCH (movie:Movie) RETURN movie LIMIT 100')
 
     if (!movies.records.length) throw new Error(`No movie records`)
 
