@@ -47,6 +47,30 @@ const challenges = [
       options: _.shuffle(options),
       answer: movie.title
     }
+  },
+  async () => {
+    const movies = await session.run ('MATCH (movie:Movie) RETURN movie LIMIT 15')
+
+    if (!movies.records.length) throw new Error(`No movie records`)
+
+    const movie = _.sample(movies.records).get(0).properties
+
+    let options = _.sampleSize(_.uniq(movies.records.map(record => record.get(0).properties.released.low)), 3)
+
+    const year = movie.released.low
+
+    if (!options.includes(year)) {
+      options = [
+        ..._.sampleSize(options, 2),
+        year
+      ]
+    }
+
+    return {
+      question: `In which year was '${movie.title}' released?`,
+      options: _.shuffle(options),
+      answer: year
+    }
   }
 ]
 
