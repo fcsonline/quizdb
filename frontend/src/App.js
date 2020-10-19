@@ -36,6 +36,9 @@ function App() {
     send('LOADING')
     const { data } = await axios.get('/api/ask')
 
+    // A bit of suspense
+    await new Promise(r => setTimeout(r, 1000));
+
     setGame(data)
     send('LOADED')
   }, [setGame, send])
@@ -68,7 +71,9 @@ function App() {
   return (
     <div className="App">
       {state.value === 'loading' && (
-        <p>Loading...</p>
+        <div className='Loading'>
+          <img src='/loading.svg' width="100" alt='Loading' />
+        </div>
       )}
 
       {state.value === 'active' && (

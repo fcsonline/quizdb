@@ -18,6 +18,10 @@
   justify-content: center;
 }
 
+.Loading {
+  padding: 250px;
+}
+
 .Badge {
   width: 100px;
 }
