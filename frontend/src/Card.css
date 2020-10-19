@@ -1,9 +1,13 @@
 .Card {
+  font-family: 'Caveat', cursive;
   text-align: center;
-  box-shadow: 4px 4px 4px #ccc;
-  border: 2px solid #222E50;
+  box-shadow: 4px 4px 4px rgba(100, 100, 100, 0.3);
+  border: 5px solid #005566;
   background: #007991;
-  font-size: 25px;
+  font-size: 32px;
+  font-weight: bold;
+  text-shadow: 4px 4px rgba(100, 100, 100, 0.3);
+  color: white;
   border-radius: 10px;
   box-sizing: border-box;
   padding: 40px 50px;
@@ -25,7 +29,7 @@
 
 .Option {
   height: 50px;
-  background: #E9D985;
+  background: #aaa;
   border: 2px solid white;
   padding: 5px;
   border-radius: 4px;
