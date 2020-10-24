@@ -2,27 +2,40 @@
 
 _A personal dynamic flash cards_
 
-A graph database (Ex: Neo4j) with stored information about whatever topic. It
-can be books, authors, movies, etc. After having everything stored on it, you
-can ask predefined questions with Cypher. Those questions can be the base for
-some kind of Flashing cards and implement [Spaced
-repetition](https://en.wikipedia.org/wiki/Spaced_repetition). Those questions
-can be easy like *Who is the guy in this picture?* or they can be difficult
-like *Who born on 1960 and filmed Magnolia?* and extreme questions *Who born the
-same year as Terminator was presented?*
+QuizDb is a really small flashcards games based in a graphical database that you setup.
+The goal of this game is to improve the capabilities and the playability of 
+flashcards (anki cards) adding more dynamism to the questions you get instead of a rigid set of them.
 
-The idea is that every user can have their own databases, like Anki decks or
-the can reuse some existing public databases.
+As a side project, the goal was to play with different technologies like neo4j databases or docker-compose.
 
-**Tecnologies:** Neo4j, GraphQL and React
+As MVP, the neo4j dataset used in this project is a demo one, related with Hollywood movies and actors,
+that comes by default with the the neo4j installation.
+
+# Screenshots
+
+![](./docs/question1.png)
+
+![](./docs/question2.png)
+
+# Setup
+
+```docker-compose up```
+
+Go to http://localhost:7474/browser/browser/ and run:
+
+```play :movies```
+
+# Play
+
+Go to http://localhost:3000 and start aswering questions!
+
+# Goals
+
+Right now, there are only two types of questions about movies in this mvp but 
+the long term goal is to bundle (datasets + dynamic questions) and share it 
+with other people. They can beed datasets about whatever topic. It
+can be books, authors, movies, etc. 
 
 ## Documentation
 
 - https://neo4jrb.readthedocs.io/en/stable/
-- https://neo4j.com/developer/ruby-course/
-- https://neo4j.com/developer/example-project/
-- https://github.com/neo4jrb/neo4j-ruby-driver/blob/master/docs/dev_manual_examples.rb
-
-## Examples
-
-- http://my-neo4j-movies-app.herokuapp.com/
