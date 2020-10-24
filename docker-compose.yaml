@@ -5,8 +5,10 @@ services:
     tty: true
     stdin_open: true
     image: node:12.18.3
+
     # ports:
     # - 9229:9229 Debuging nodejs
+
     volumes:
     - ./backend/:/app
     environment:
@@ -24,8 +26,10 @@ services:
     tty: true
     stdin_open: true
     image: node:12.18.3
+
     # ports:
     # - 9229:9229 Debuging nodejs
+
     volumes:
     - ./frontend/:/app
     working_dir: /app
@@ -65,7 +69,3 @@ services:
       - ./neo4j/plugins:/plugins
     environment:
       - NEO4J_AUTH=neo4j/test
-
-      # - NEO4J_dbms_memory_pagecache_size=1G
-      # - NEO4J_dbms.memory.heap.initial_size=1G
-      # - NEO4J_dbms_memory_heap_max__size=1G
