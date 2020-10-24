@@ -82,4 +82,12 @@ app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
 
-// await driver.close()
+process.on('SIGTERM', async () => {
+  debug('SIGTERM signal received: closing HTTP server')
+
+  await driver.close()
+
+  app.close(() => {
+    debug('HTTP server closed')
+  })
+})
