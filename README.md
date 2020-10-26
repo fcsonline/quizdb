@@ -23,6 +23,11 @@ Go to http://localhost:7474/browser/browser/ and run:
 play :movies
 ```
 
+After load the movies, you should have something like this in your neo4j
+database:
+
+![](./docs/movies.png)
+
 ## Play
 
 Go to http://localhost:3000 and start answering questions!
